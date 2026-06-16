@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum StoryCategory {
+  MEMORY
+  HISTORICAL
+  PERSONAL
+  PLACE_REVIEW
+}
+
+enum BadgeType {
+  STORY_KEEPER
+  CITY_EXPLORER
+  MEMORY_COLLECTOR
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  points    Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stories      Story[]
+  savedPlaces  SavedPlace[]
+  badges       UserBadge[]
+  storyLikes   StoryLike[]
+}
+
+model City {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  nameAr      String?
+  latitude    Float
+  longitude   Float
+  description String?
+  imageUrl    String?
+  storyCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  stories     Story[]
+  savedPlaces SavedPlace[]
+}
+
+model Story {
+  id          String        @id @default(cuid())
+  title       String
+  description String
+  images      Json      @default("[]")
+  cityId      String
+  latitude    Float
+  longitude   Float
+  category    StoryCategory
+  userId      String
+  viewCount   Int           @default(0)
+  likeCount   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  city   City        @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes  StoryLike[]
+
+  @@index([cityId])
+  @@index([userId])
+  @@index([category])
+  @@index([createdAt])
+}
+
+model SavedPlace {
+  id        String   @id @default(cuid())
+  userId    String
+  cityId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  city City @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cityId])
+}
+
+model UserBadge {
+  id        String    @id @default(cuid())
+  userId    String
+  type      BadgeType
+  earnedAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type])
+}
+
+model StoryLike {
+  id        String   @id @default(cuid())
+  userId    String
+  storyId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, storyId])
+}
