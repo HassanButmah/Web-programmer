@@ -1,5 +1,5 @@
 # BaladVerse 🌍
-
+Palestine Map
 **BaladVerse** is an interactive storytelling map of Palestine. Explore cities, share memories, and discover stories tied to real geographic locations — a social, map-first storytelling platform (not a news site).
 
 ![Stack](https://img.shields.io/badge/Next.js-14-black) ![Stack](https://img.shields.io/badge/Express-5-green) ![Stack](https://img.shields.io/badge/SQLite-blue) ![Stack](https://img.shields.io/badge/100%25_Free-brightgreen)
